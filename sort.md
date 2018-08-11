@@ -1,443 +1,725 @@
-典排序算法在面试中占有很大的比重，也是基础。包括冒泡排序，插入排序，选择排序，希尔排序，归并排序，快速排序，堆排序。希望能帮助到有需要的同学。全部程序采用Java实现。
+### 0、算法概述
 
-本篇所有排序实现均默认从小到大。
+#### 0.1 算法分类
 
-一、冒泡排序 BubbleSort
+十种常见排序算法可以分为两大类：
 
-介绍：
-冒泡排序的原理非常简单，它重复地走访过要排序的数列，一次比较两个元素，如果他们的顺序错误就把他们交换过来。
+> **非线性时间比较类排序**：通过比较来决定元素间的相对次序，由于其时间复杂度不能突破O(nlogn)，因此称为非线性时间比较类排序。
+> 
+> **线性时间非比较类排序**：不通过比较来决定元素间的相对次序，它可以突破基于比较排序的时间下界，以线性时间运行，因此称为线性时间非比较类排序。 
 
-步骤：
-比较相邻的元素。如果第一个比第二个大，就交换他们两个。
-对第0个到第n-1个数据做同样的工作。这时，最大的数就“浮”到了数组最后的位置上。
-针对所有的元素重复以上的步骤，除了最后一个。
-持续每次对越来越少的元素重复上面的步骤，直到没有任何一对数字需要比较。
+![](https://images2018.cnblogs.com/blog/849589/201804/849589-20180402132530342-980121409.png)
 
-/**
-	 * 冒泡排序算法
-	 * 原理是临近的数字两两进行比较,按照从小到大或者从大到小的顺序进行交换,这样一趟过去后,最大或最小的数字被交换到了最后一位,然后再从头开始进行两两比较交换,直到倒数第二位时结束
-	 * @param nums 被排序的数组
-	 * @param n 数组长度
-	 * 最坏情况：O(n2)  如果未优化的冒泡排序，最好情况也是O（n2），优化后最好情况是O（n）
-	 */
-	public void BubbleSort(int[] nums,int len){
-		for(int i=0;i<len-1;i++){ //一趟比较
-			for(int j=0;j<<strong>len-1-i</strong>;j++){ //一次比较,每次把最大值放在最后面，所以下一次比较的时候不用对后i个数比较了
-				int temp = nums[j];
-				if(nums[j] > nums[j+1]){
-					nums[j] = nums[j+1];
-					nums[j+1] = temp;
-				}
-			}
-		}		system.out.println("冒泡排序：");
-		for (int i : nums) {
-			System.out.print(i+" ");
-		}
-	}
+#### 0.2 算法复杂度
 
+![](https://images2018.cnblogs.com/blog/849589/201804/849589-20180402133438219-1946132192.png)
 
-不过针对上述代码还有两种优化方案。
+**0.3 相关概念**
 
-优化1：某一趟遍历如果没有数据交换，则说明已经排好序了，因此不用再进行迭代了。用一个标记记录这个状态即可（程序如下）。
+> **稳定**：如果a原本在b前面，而a=b，排序之后a仍然在b的前面。
+> 
+> **不稳定**：如果a原本在b的前面，而a=b，排序之后 a 可能会出现在 b 的后面。
+> 
+> **时间复杂度**：对排序数据的总的操作次数。反映当n变化时，操作次数呈现什么规律。
+> 
+> **空间复杂度：**是指算法在计算机内执行时所需存储空间的度量，它也是数据规模n的函数。 
 
-优化2：记录某次遍历时最后发生数据交换的位置，这个位置之后的数据显然已经有序，不用再排序了。因此通过记录最后发生数据交换的位置就可以确定下次循环的范围了（上面程序中" j<=len-1-i" 实现）。
+### 1、冒泡排序（Bubble Sort）
 
-public void betterBubbleSort(int[] nums,int len){
-		boolean flag;
-		flag = true;
-		for(int i=0;i<len-1 && flag;i++){ //一趟比较 如果上趟比较一次也没有交换，则说明后面都排好序了，不用再比较了
-			flag = false;
-			for(int j=0;j<len-1-i;j++){ //一次比较,每次把最大值放在最后面，所以下一次比较的时候不用对后i个数比较了
-				int temp = nums[j];
-				if(nums[j] > nums[j+1]){
-					nums[j] = nums[j+1];
-					nums[j+1] = temp;
-					flag = true;
-				}
-			}
-		}
-		System.out.println("优化后的冒泡排序：");
-		for (int i : nums) {
-			System.out.print(i+" ");
-		}
-	}
+冒泡排序是一种简单的排序算法。它重复地走访过要排序的数列，一次比较两个元素，如果它们的顺序错误就把它们交换过来。走访数列的工作是重复地进行直到没有再需要交换，也就是说该数列已经排序完成。这个算法的名字由来是因为越小的元素会经由交换慢慢“浮”到数列的顶端。 
+
+#### 1.1 算法描述
+
+*   比较相邻的元素。如果第一个比第二个大，就交换它们两个；
+*   对每一对相邻元素作同样的工作，从开始第一对到结尾的最后一对，这样在最后的元素应该会是最大的数；
+*   针对所有的元素重复以上的步骤，除了最后一个；
+*   重复步骤1~3，直到排序完成。
+
+**1.2 动图演示**
+
+![](https://images2017.cnblogs.com/blog/849589/201710/849589-20171015223238449-2146169197.gif)
+
+#### 1.3 代码实现
 
 
+``` java
 
-二、选择排序 SelectionSort
+`function bubbleSort(arr) {`
 
-介绍：
-选择排序无疑是最简单直观的排序。它的工作原理如下。
+`var` `len = arr.length;`
 
-步骤：
-在未排序序列中找到最小（大）元素，存放到排序序列的起始位置。
-再从剩余未排序元素中继续寻找最小（大）元素，然后放到已排序序列的末尾。
-以此类推，直到所有元素均排序完毕。
-<span style="font-size:14px;font-weight: normal;">/**
-	 * 选择排序算法
-	 * 基本思想是：每一趟从待排序的记录中选出关键字最小的记录，顺序放在已排好序的子序列前面，直到全部记录排序完毕。
-	 * @param nums 被排序的数组
-	 * @param n 数组长度
-	 * 最坏情况：O（n2） ，最好情况：O（n2）
-	 */
-	public void SelectSort(int[] nums,int len){
-		for(int i=0;i<len;i++){
-			int min = nums[i]; //先把每一趟最小值暂定为nums[i]
-			int index = i; //记录最小值所在的索引值
-			for(int j=i+1;j<len;j++){ //开始一趟比较：从i+1位置到数组末尾比较，找出最小值并记录位置
-				if(nums[j] < min){
-					min = nums[j];
-					index = j;
-				}
-			}
-			//将nums[i]和最小值交换
-			nums[index] = nums[i]; 
-			nums[i] = min;
-		}
-		System.out.println("选择排序：");
-		for (int i : nums) {
-			System.out.print(i+" ");
-		}
-	}</span>
+`for` `(``var` `i = 0; i < len - 1; i++) {`
 
+`for` `(``var` `j = 0; j < len - 1 - i; j++) {`
 
-三、插入排序 InsertionSort
+`if` `(arr[j] > arr[j+1]) {` `// 相邻元素两两对比`
 
-介绍：
-插入排序的工作原理是，对于每个未排序数据，在已排序序列中从后向前扫描，找到相应位置并插入。
+`var` `temp = arr[j+1];` `// 元素交换`
 
-步骤：
-从第一个元素开始，该元素可以认为已经被排序
-取出下一个元素，在已经排序的元素序列中从后向前扫描
-如果被扫描的元素（已排序）大于新元素，将该元素后移一位
-重复步骤3，直到找到已排序的元素小于或者等于新元素的位置
-将新元素插入到该位置后
-重复步骤2~5
+`arr[j+1] = arr[j];`
 
-排序演示：
+`arr[j] = temp;`
 
+`}`
 
-/**
-	 * 插入排序算法
-	 * @param nums 被排序的数组
-	 * @param n 数组长度
-	 * 最坏情况：输入数组已反向排序  O（n2）； 最好情况：输入数组已排序  O（n）；平均情况：O（n2）
-	 * 由于插入排序其内层循环非常紧凑，对于小规模输入，插入排序是一种非常快的排序算法
-	 */
-	public void InsertSort(int[] nums,int len){
-		int j;
-		for(int i=1;i<len;i++){
-			int temp = nums[i];
-			for(j=i;j>0;j--){
-				if(temp < nums[j-1]){
-					nums[j] = nums[j-1]; //将所有在nums[i]之前的大于nums[i]的值都往后移一位
-				}
-				else break; 
-			}
-			//移完所有大于nums[i]的值后，j刚好指向最靠前一个大于nums[i]的位置
-			nums[j] = temp;
-		}
-		System.out.println("插入排序：");
-		for (int i : nums) {
-			System.out.print(i+" ");
-		}
-	}
+`}`
 
-四、希尔排序 ShellSort
+`}`
 
-介绍：
-希尔排序，也称递减增量排序算法，实质是分组插入排序。由 Donald Shell 于1959年提出。希尔排序是非稳定排序算法。
+`return` `arr;`
 
-希尔排序的基本思想是：将数组列在一个表中并对列分别进行插入排序，重复这过程，不过每次用更长的列（步长更长了，列数更少了）来进行。最后整个表就只有一列了。将数组转换至表是为了更好地理解这算法，算法本身还是使用数组进行排序。
+`}`
+```
+### 2、选择排序（Selection Sort）
 
-例如，假设有这样一组数
-[ 13 14 94 33 82 25 59 94 65 23 45 27 73 25 39 10 ]
-，如果我们以步长为5开始进行排序，我们可以通过将这列表放在有5列的表中来更好地描述算法，这样他们就应该看起来是这样：
+选择排序(Selection-sort)是一种简单直观的排序算法。它的工作原理：首先在未排序序列中找到最小（大）元素，存放到排序序列的起始位置，然后，再从剩余未排序元素中继续寻找最小（大）元素，然后放到已排序序列的末尾。以此类推，直到所有元素均排序完毕。 
 
-13 14 94 33 82
-25 59 94 65 23
-45 27 73 25 39
-10
+#### 2.1 算法描述
 
-然后我们对每列进行排序：
+n个记录的直接选择排序可经过n-1趟直接选择排序得到有序结果。具体算法描述如下：
 
-10 14 73 25 23
-13 27 94 33 39
-25 59 94 65 82
-45
+*   初始状态：无序区为R\[1..n\]，有序区为空；
+*   第i趟排序(i=1,2,3…n-1)开始时，当前有序区和无序区分别为R\[1..i-1\]和R(i..n）。该趟排序从当前无序区中-选出关键字最小的记录 R\[k\]，将它与无序区的第1个记录R交换，使R\[1..i\]和R\[i+1..n)分别变为记录个数增加1个的新有序区和记录个数减少1个的新无序区；
+*   n-1趟结束，数组有序化了。
 
-将上述四行数字，依序接在一起时我们得到：
-[ 10 14 73 25 23 13 27 94 33 39 25 59 94 65 82 45 ]
-。这时10已经移至正确位置了，然后再以3为步长进行排序：
+#### **2.2 动图演示**
 
-10 14 73
-25 23 13
-27 94 33
-39 25 59
-94 65 82
-45
+![](https://images2017.cnblogs.com/blog/849589/201710/849589-20171015224719590-1433219824.gif)　　
 
-排序之后变为：
+#### 2.3 代码实现
 
-10 14 13
-25 23 33
-27 25 59
-39 65 73
-45 94 82
-94
+``` java
 
-最后以1步长进行排序（此时就是简单的插入排序了）。
+`function selectionSort(arr) {`
 
-/**
-	 * 希尔排序算法
-	 * @param nums 被排序的数组
-	 * @param n 数组长度
-	 * 最坏情况：O（n2） 使用Hibbard增量的最坏情况：O（n^3/2）
-	 */
-	public void ShellSort(int[] nums,int len){
-		int increment;
-		int temp,i,j;
-		for(increment = len/2;increment > 0;increment /= 2){ //增量为len/2 len/4 len/8.....1
-			for(i=increment;i<len;i++){ //对每个子序列进行插入排序
-				temp = nums[i];
-				for(j=i;j>=increment;j -= increment){
-					if(temp < nums[j-increment]){
-						nums[j] = nums[j-increment];
-					}
-					else
-						break;
-				}
-				nums[j] = temp;
-			}
-		}
-		System.out.println("希尔排序：");
-		for (int k : nums) {
-			System.out.print(k+" ");
-		}
-	}
+`var` `len = arr.length;`
 
-五、归并排序 MergeSort
+`var` `minIndex, temp;`
 
-介绍：
-归并排序是采用分治法的一个非常典型的应用。
-归并
-排序的思想就是先递
-归
-分解数组，再
-合
-并数组。
+`for` `(``var` `i = 0; i < len - 1; i++) {`
 
-先考虑合并两个有序数组，基本思路是比较两个数组的最前面的数，谁小就先取谁，取了后相应的指针就往后移一位。然后再比较，直至一个数组为空，最后把另一个数组的剩余部分复制过来即可。
+`minIndex = i;`
 
-再考虑递归分解，基本思路是将数组分解成
-left
-和
-right
-，如果这两个数组内部数据是有序的，那么就可以用上面合并数组的方法将这两个数组合并排序。如何让这两个数组内部是有序的？可以再二分，直至分解出的小组只含有一个元素时为止，此时认为该小组内部已有序。然后合并排序相邻二个小组即可。
+`for` `(``var` `j = i + 1; j < len; j++) {`
 
-排序演示：
+`if` `(arr[j] < arr[minIndex]) {` `// 寻找最小的数`
 
-/**
-	 * 归并排序算法
-	 * 将待排序序列R[0...n-1]看成是n个长度为1的有序序列，将相邻的有序表成对归并，得到n/2个长度为2的有序表；将这些有序序列再次归并，
-	 * 得到n/4个长度为4的有序序列；如此反复进行下去，最后得到一个长度为n的有序序列。
-	 * 综上可知：归并排序其实要做两件事：（1）“分解”——将序列每次折半划分。（2）“合并”——将划分后的序列段两两合并后排序。
-	 * @param nums
-	 * @param len
-	 * O(nlogn)
-	 */
-	public void MergeSort(int[] nums,int len){
-		sort(nums, 0, len-1);
-		System.out.println("归并排序：");
-		for (int k : nums) {
-			System.out.print(k+" ");
-		}
-	}
-	//分段 将一个数组分成2个数组
-	public void sort(int[] nums,int low,int high){
-		int mid = (high+low)/2;
-		if(low < high){
-			sort(nums, low, mid);
-			sort(nums, mid+1, high);
-			merge(nums, low, mid, high);
-		}
-	}
-	// 分段排序 再合起来
-	public void merge(int[] array,int low,int mid,int high){
-		int i=low; //第一段序列下标
-		int j=mid+1; //第二段序列下标
-		int k=0; //第三段序列下标
-		int[] array2 = new int[high - low + 1]; //新序列
-		while(i<=mid && j<=high){ //把两个子序列的头元素比较，取较小者进入新序列，然后在旧序列中跳过这个较小值，开始下一次比较
-			if(array[i] <= array[j]){
-				array2[k++] = array[i++];
-			}
-			else{
-				array2[k++] = array[j++];
-			}
-		}
-		if(i <= mid){ //说明上面是j溢出退出循环，即序列1还未比较完
-			while(i<=mid){ //若第一段序列还没扫描完，将其全部复制到合并序列
-				array2[k++] = array[i++];
-			}
-		}
-		else if(j <= high){
-			while(j<=high){ //若第二段序列还没扫描完，将其全部复制到合并序列
-				array2[k++] = array[j++];
-			}
-		}
-		for(k=0;k<array2.length;k++){
-			array[k+low] = array2[k];//将分段排序的新数组复制到之前数组
-		}
-	}
+`minIndex = j;` `// 将最小数的索引保存`
 
-六、快速排序 QuickSort
+`}`
 
-介绍：
-快速排序通常明显比同为Ο(n log n)的其他算法更快，因此常被采用，而且快排采用了分治法的思想，所以在很多笔试面试中能经常看到快排的影子。可见掌握快排的重要性。
+`}`
 
-步骤：
-从数列中挑出一个元素作为基准数。
-分区过程，将比基准数大的放到右边，小于或等于它的数都放到左边。
-再对左右区间递归执行第二步，直至各区间只有一个数。
+`temp = arr[i];`
 
-排序演示：
+`arr[i] = arr[minIndex];`
 
+`arr[minIndex] = temp;`
 
-/**
-	 * 快速排序算法
-	 * 快速排序采用的思想是分治思想。快速排序是找出一个元素（理论上可以随便找一个）作为基准(pivot),
-	 * 然后对数组进行分区操作,使基准左边元素的值都不大于基准值,基准右边的元素值 都不小于基准值，如此作为基准的元素调整到排序后的正确位置。
-	 * 递归快速排序，将其他n-1个元素也调整到排序后的正确位置。最后每个元素都是在排序后的正 确位置，排序完成。
-	 * 所以快速排序算法的核心算法是分区操作，即如何调整基准的位置以及调整返回基准的最终位置以便分治递归。
-	 * @param nums
-	 * @param len
-	 * O(NlogN)
-	 */
-	public void QuickSort(int[] nums,int len){
-		Qsort(nums,0,len-1);
-		System.out.println("快速排序：");
-		for (int k : nums) {
-			System.out.print(k+" ");
-		}
-	}
-	public void Qsort(int[] nums, int left, int right) {
-		if(left>right) return;
-		int pivot = nums[left];
-		int i = left;
-		int j = right;
-		while(i < j){
-			while(nums[j] >= pivot && i<j){ //从右往左找比nums[i]小的数
-				j--;
-			}
-			nums[i] = nums[j]; //找到之后交换
-			while(nums[i] <= pivot && i<j){ //从左往右找比nums[j]大的数
-				i++;
-			}
-			nums[j]  = nums[i];	 //找到之后交换
-		}
-		//while执行完后，必然有 i==j 
-		nums[i] = pivot; //将基准数归位
-		Qsort(nums, left, i-1); //递归处理左边
-		Qsort(nums, i+1, right); //递归处理右边
-	}
+`}`
 
-七、堆排序 HeapSort
+`return` `arr;`
 
-介绍：
-堆排序在 top K 问题中使用比较频繁。堆排序是采用二叉堆的数据结构来实现的，虽然实质上还是一维数组。二叉堆是一个近似完全二叉树 。
+`} `
+```
 
-二叉堆具有以下性质：
-父节点的键值总是大于或等于（小于或等于）任何一个子节点的键值。
-每个节点的左右子树都是一个二叉堆（都是最大堆或最小堆）。
+#### 2.4 算法分析
 
-步骤：
-构造最大堆（Build_Max_Heap）：若数组下标范围为0~n，考虑到单独一个元素是大根堆，则从下标
-n/2
-开始的元素均为大根堆。于是只要从
-n/2-1
-开始，向前依次构造大根堆，这样就能保证，构造到某个节点时，它的左右子树都已经是大根堆。
+表现最稳定的排序算法之一，因为无论什么数据进去都是O(n2)的时间复杂度，所以用到它的时候，数据规模越小越好。唯一的好处可能就是不占用额外的内存空间了吧。理论上讲，选择排序可能也是平时排序一般人想到的最多的排序方法了吧。
 
+### 3、插入排序（Insertion Sort）
 
-堆排序（HeapSort）：由于堆是用数组模拟的。得到一个大根堆后，数组内部并不是有序的。因此需要将堆化数组有序化。思想是移除根节点，并做最大堆调整的递归运算。第一次将
-heap[0]
-与
-heap[n-1]
-交换，再对
-heap[0...n-2]
-做最大堆调整。第二次将
-heap[0]
-与
-heap[n-2]
-交换，再对
-heap[0...n-3]
-做最大堆调整。重复该操作直至
-heap[0]
-和
-heap[1]
-交换。由于每次都是将最大的数并入到后面的有序区间，故操作完后整个数组就是有序的了。
+插入排序（Insertion-Sort）的算法描述是一种简单直观的排序算法。它的工作原理是通过构建有序序列，对于未排序数据，在已排序序列中从后向前扫描，找到相应位置并插入。
 
+#### 3.1 算法描述
 
-最大堆调整（Max_Heapify）：该方法是提供给上述两个过程调用的。目的是将堆的末端子节点作调整，使得子节点永远小于父节点 。
+一般来说，插入排序都采用in-place在数组上实现。具体算法描述如下：
 
-排序演示：
+*   从第一个元素开始，该元素可以认为已经被排序；
+*   取出下一个元素，在已经排序的元素序列中从后向前扫描；
+*   如果该元素（已排序）大于新元素，将该元素移到下一位置；
+*   重复步骤3，直到找到已排序的元素小于或者等于新元素的位置；
+*   将新元素插入到该位置后；
+*   重复步骤2~5。
 
+#### 3.2 动图演示
 
-/**
-	 * 堆排序算法(max堆)
-	 * @param nums 被排序的数组
-	 * @param n 数组长度
-	 * 时间复杂度 O（nlogn）
-	 * 要先构建最大堆，然后循环删除堆的根节点上的最大值，并将它移到堆末尾，并将堆长度减一，再开始下一次的删除根节点
-	 */
-	public void HeapSort(int[] nums,int len){
-		//构建最大堆
-		for(int i=len/2;i>=0;i--){
-			percDown(nums,i,len);
-		}
-		//循环，每次把根节点和最后一个节点调换位置
-		for(int i=len-1;i>=1;i--){
-			//Swap(nums[0],nums[i])交换nums[0]和nums[i]
-			int temp = nums[0];
-			nums[0] = nums[i];
-			nums[i] = temp;
-			percDown(nums,0,i);
-		}
-		
-		System.out.println("堆排序：");
-		for (int k : nums) {
-			System.out.print(k+" ");
-		}
-	}
-		/**
-		 * 堆调整，使其生成最大堆
-		 * @param nums
-		 * @param i
-		 * @param size
-		 */
-		public void percDown(int[] nums,int i,int size){
-			int left = 2*i+1;
-			int right = 2*i+2;
-			int max = i;
-			if(left < size && nums[left] > nums[max]){
-				max = left;
-			}
-			if(right < size && nums[right] > nums[max]){
-				max = right;
-			}
-			if(max != i){
-				int temp = nums[i];
-				nums[i] = nums[max];
-				nums[max] = temp;
-				percDown(nums,max,size);
-			}
-			
-		}
+![](https://images2017.cnblogs.com/blog/849589/201710/849589-20171015225645277-1151100000.gif)
 
-总结
+#### 3.2 代码实现
 
-下面为七种经典排序算法指标对比情况：
+``` java
+`function insertionSort(arr) {`
+
+`var` `len = arr.length;`
+
+`var` `preIndex, current;`
+
+`for` `(``var` `i = 1; i < len; i++) {`
+
+`preIndex = i - 1;`
+
+`current = arr[i];`
+
+`while` `(preIndex >= 0 && arr[preIndex] > current) {`
+
+`arr[preIndex + 1] = arr[preIndex];`
+
+`preIndex--;`
+
+`}`
+
+`arr[preIndex + 1] = current;`
+
+`}`
+
+`return` `arr;`
+
+`}`
+
+```
+#### 3.4 算法分析
+
+插入排序在实现上，通常采用in-place排序（即只需用到O(1)的额外空间的排序），因而在从后向前扫描过程中，需要反复把已排序元素逐步向后挪位，为最新元素提供插入空间。
+
+### 4、希尔排序（Shell Sort）
+
+1959年Shell发明，第一个突破O(n2)的排序算法，是简单插入排序的改进版。它与插入排序的不同之处在于，它会优先比较距离较远的元素。希尔排序又叫**缩小增量排序**。
+
+#### 4.1 算法描述
+
+先将整个待排序的记录序列分割成为若干子序列分别进行直接插入排序，具体算法描述：
+
+*   选择一个增量序列t1，t2，…，tk，其中ti>tj，tk=1；
+*   按增量序列个数k，对序列进行k 趟排序；
+*   每趟排序，根据对应的增量ti，将待排序列分割成若干长度为m 的子序列，分别对各子表进行直接插入排序。仅增量因子为1 时，整个序列作为一个表来处理，表长度即为整个序列的长度。
+
+#### 4.2 动图演示
+
+![](https://images2018.cnblogs.com/blog/849589/201803/849589-20180331170017421-364506073.gif)
+
+#### 4.3 代码实现
 
 
 
-摘选自书圈：https://mp.weixin.qq.com/s/VdSZq4U5pHQQ2LXdeVrO0A
+
+```
+`function shellSort(arr) {`
+
+`var` `len = arr.length,`
+
+`temp,`
+
+`gap = 1;`
+
+`while` `(gap < len / 3) {` `// 动态定义间隔序列`
+
+`gap = gap * 3 + 1;`
+
+`}`
+
+`for` `(gap; gap > 0; gap = Math.floor(gap / 3)) {`
+
+`for` `(``var` `i = gap; i < len; i++) {`
+
+`temp = arr[i];`
+
+`for` `(``var` `j = i-gap; j > 0 && arr[j]> temp; j-=gap) {`
+
+`arr[j + gap] = arr[j];`
+
+`}`
+
+`arr[j + gap] = temp;`
+
+`}`
+
+`}`
+
+`return` `arr;`
+
+`}`
+```
+
+#### 4.4 算法分析
+
+希尔排序的核心在于间隔序列的设定。既可以提前设定好间隔序列，也可以动态的定义间隔序列。动态定义间隔序列的算法是《算法（第4版）》的合著者Robert Sedgewick提出的。　
+
+### 5、归并排序（Merge Sort）
+
+归并排序是建立在归并操作上的一种有效的排序算法。该算法是采用分治法（Divide and Conquer）的一个非常典型的应用。将已有序的子序列合并，得到完全有序的序列；即先使每个子序列有序，再使子序列段间有序。若将两个有序表合并成一个有序表，称为2-路归并。 
+
+#### 5.1 算法描述
+
+*   把长度为n的输入序列分成两个长度为n/2的子序列；
+*   对这两个子序列分别采用归并排序；
+*   将两个排序好的子序列合并成一个最终的排序序列。
+
+#### 5.2 动图演示
+
+![](https://images2017.cnblogs.com/blog/849589/201710/849589-20171015230557043-37375010.gif)
+
+#### 5.3 代码实现
+
+
+``` java
+
+`function mergeSort(arr) {` `// 采用自上而下的递归方法`
+
+`var` `len = arr.length;`
+
+`if` `(len < 2) {`
+
+`return` `arr;`
+
+`}`
+
+`var` `middle = Math.floor(len / 2),`
+
+`left = arr.slice(0, middle),`
+
+`right = arr.slice(middle);`
+
+`return` `merge(mergeSort(left), mergeSort(right));`
+
+`}`
+
+`function merge(left, right) {`
+
+`var` `result = [];`
+
+`while` `(left.length>0 && right.length>0) {`
+
+`if` `(left[0] <= right[0]) {`
+
+`result.push(left.shift());`
+
+`}` `else` `{`
+
+`result.push(right.shift());`
+
+`}`
+
+`}`
+
+`while` `(left.length)`
+
+`result.push(left.shift());`
+
+`while` `(right.length)`
+
+`result.push(right.shift());`
+
+`return` `result;`
+
+`}`
+```
+#### 5.4 算法分析
+
+归并排序是一种稳定的排序方法。和选择排序一样，归并排序的性能不受输入数据的影响，但表现比选择排序好的多，因为始终都是O(nlogn）的时间复杂度。代价是需要额外的内存空间。
+
+### 6、快速排序（Quick Sort）
+
+快速排序的基本思想：通过一趟排序将待排记录分隔成独立的两部分，其中一部分记录的关键字均比另一部分的关键字小，则可分别对这两部分记录继续进行排序，以达到整个序列有序。
+
+#### 6.1 算法描述
+
+快速排序使用分治法来把一个串（list）分为两个子串（sub-lists）。具体算法描述如下：
+
+*   从数列中挑出一个元素，称为 “基准”（pivot）；
+*   重新排序数列，所有元素比基准值小的摆放在基准前面，所有元素比基准值大的摆在基准的后面（相同的数可以到任一边）。在这个分区退出之后，该基准就处于数列的中间位置。这个称为分区（partition）操作；
+*   递归地（recursive）把小于基准值元素的子数列和大于基准值元素的子数列排序。
+
+#### 6.2 动图演示
+
+![](https://images2017.cnblogs.com/blog/849589/201710/849589-20171015230936371-1413523412.gif)
+
+#### 6.3 代码实现
+
+
+
+```java
+`function quickSort(arr, left, right) {`
+
+`var` `len = arr.length,`
+
+`partitionIndex,`
+
+`left =` `typeof` `left !=` `'number'` `? 0 : left,`
+
+`right =` `typeof` `right !=` `'number'` `? len - 1 : right;`
+
+`if` `(left < right) {`
+
+`partitionIndex = partition(arr, left, right);`
+
+`quickSort(arr, left, partitionIndex-1);`
+
+`quickSort(arr, partitionIndex+1, right);`
+
+`}`
+
+`return` `arr;`
+
+`}`
+
+`function partition(arr, left ,right) {` `// 分区操作`
+
+`var` `pivot = left,` `// 设定基准值（pivot）`
+
+`index = pivot + 1;`
+
+`for` `(``var` `i = index; i <= right; i++) {`
+
+`if` `(arr[i] < arr[pivot]) {`
+
+`swap(arr, i, index);`
+
+`index++;`
+
+`}       `
+
+`}`
+
+`swap(arr, pivot, index - 1);`
+
+`return` `index-1;`
+
+`}`
+
+`function swap(arr, i, j) {`
+
+`var` `temp = arr[i];`
+
+`arr[i] = arr[j];`
+
+`arr[j] = temp;`
+
+`}`
+
+```
+
+### 7、堆排序（Heap Sort）
+
+堆排序（Heapsort）是指利用堆这种数据结构所设计的一种排序算法。堆积是一个近似完全二叉树的结构，并同时满足堆积的性质：即子结点的键值或索引总是小于（或者大于）它的父节点。
+
+#### 7.1 算法描述
+
+*   将初始待排序关键字序列(R1,R2….Rn)构建成大顶堆，此堆为初始的无序区；
+*   将堆顶元素R\[1\]与最后一个元素R\[n\]交换，此时得到新的无序区(R1,R2,……Rn-1)和新的有序区(Rn),且满足R\[1,2…n-1\]<=R\[n\]；
+*   由于交换后新的堆顶R\[1\]可能违反堆的性质，因此需要对当前无序区(R1,R2,……Rn-1)调整为新堆，然后再次将R\[1\]与无序区最后一个元素交换，得到新的无序区(R1,R2….Rn-2)和新的有序区(Rn-1,Rn)。不断重复此过程直到有序区的元素个数为n-1，则整个排序过程完成。
+
+#### 7.2 动图演示
+
+![](https://images2017.cnblogs.com/blog/849589/201710/849589-20171015231308699-356134237.gif)
+
+#### 7.3 代码实现
+
+``` java
+`var` `len;` `// 因为声明的多个函数都需要数据长度，所以把len设置成为全局变量`
+
+`function buildMaxHeap(arr) {` `// 建立大顶堆`
+
+`len = arr.length;`
+
+`for` `(``var` `i = Math.floor(len/2); i >= 0; i--) {`
+
+`heapify(arr, i);`
+
+`}`
+
+`}`
+
+`function heapify(arr, i) {` `// 堆调整`
+
+`var` `left = 2 * i + 1,`
+
+`right = 2 * i + 2,`
+
+`largest = i;`
+
+`if` `(left < len && arr[left] > arr[largest]) {`
+
+`largest = left;`
+
+`}`
+
+`if` `(right < len && arr[right] > arr[largest]) {`
+
+`largest = right;`
+
+`}`
+
+`if` `(largest != i) {`
+
+`swap(arr, i, largest);`
+
+`heapify(arr, largest);`
+
+`}`
+
+`}`
+
+`function swap(arr, i, j) {`
+
+`var` `temp = arr[i];`
+
+`arr[i] = arr[j];`
+
+`arr[j] = temp;`
+
+`}`
+
+`function heapSort(arr) {`
+
+`buildMaxHeap(arr);`
+
+`for` `(``var` `i = arr.length - 1; i > 0; i--) {`
+
+`swap(arr, 0, i);`
+
+`len--;`
+
+`heapify(arr, 0);`
+
+`}`
+
+`return` `arr;`
+
+`}`
+```
+
+### 8、计数排序（Counting Sort）
+
+计数排序不是基于比较的排序算法，其核心在于将输入的数据值转化为键存储在额外开辟的数组空间中。 作为一种线性时间复杂度的排序，计数排序要求输入的数据必须是有确定范围的整数。
+
+#### 8.1 算法描述
+
+*   找出待排序的数组中最大和最小的元素；
+*   统计数组中每个值为i的元素出现的次数，存入数组C的第i项；
+*   对所有的计数累加（从C中的第一个元素开始，每一项和前一项相加）；
+*   反向填充目标数组：将每个元素i放在新数组的第C(i)项，每放一个元素就将C(i)减去1。
+
+#### 8.2 动图演示
+
+![](https://images2017.cnblogs.com/blog/849589/201710/849589-20171015231740840-6968181.gif)
+
+#### 8.3 代码实现
+
+
+``` java
+`function countingSort(arr, maxValue) {`
+
+`var` `bucket =` `new` `Array(maxValue + 1),`
+
+`sortedIndex = 0;`
+
+`arrLen = arr.length,`
+
+`bucketLen = maxValue + 1;`
+
+`for` `(``var` `i = 0; i < arrLen; i++) {`
+
+`if` `(!bucket[arr[i]]) {`
+
+`bucket[arr[i]] = 0;`
+
+`}`
+
+`bucket[arr[i]]++;`
+
+`}`
+
+`for` `(``var` `j = 0; j < bucketLen; j++) {`
+
+`while``(bucket[j] > 0) {`
+
+`arr[sortedIndex++] = j;`
+
+`bucket[j]--;`
+
+`}`
+
+`}`
+
+`return` `arr;`
+
+`}`
+```
+
+#### 8.4 算法分析
+
+计数排序是一个稳定的排序算法。当输入的元素是 n 个 0到 k 之间的整数时，时间复杂度是O(n+k)，空间复杂度也是O(n+k)，其排序速度快于任何比较排序算法。当k不是很大并且序列比较集中时，计数排序是一个很有效的排序算法。
+
+### 9、桶排序（Bucket Sort）
+
+桶排序是计数排序的升级版。它利用了函数的映射关系，高效与否的关键就在于这个映射函数的确定。桶排序 (Bucket sort)的工作的原理：假设输入数据服从均匀分布，将数据分到有限数量的桶里，每个桶再分别排序（有可能再使用别的排序算法或是以递归方式继续使用桶排序进行排）。
+
+#### 9.1 算法描述
+
+*   设置一个定量的数组当作空桶；
+*   遍历输入数据，并且把数据一个一个放到对应的桶里去；
+*   对每个不是空的桶进行排序；
+*   从不是空的桶里把排好序的数据拼接起来。 
+
+#### 9.2 图片演示
+
+![](https://images2017.cnblogs.com/blog/849589/201710/849589-20171015232107090-1920702011.png)
+
+#### 9.3 代码实现
+
+
+
+``` java
+
+`function bucketSort(arr, bucketSize) {`
+
+`if` `(arr.length === 0) {`
+
+`return` `arr;`
+
+`}`
+
+`var` `i;`
+
+`var` `minValue = arr[0];`
+
+`var` `maxValue = arr[0];`
+
+`for` `(i = 1; i < arr.length; i++) {`
+
+`if` `(arr[i] < minValue) {`
+
+`minValue = arr[i];` `// 输入数据的最小值`
+
+`}` `else` `if` `(arr[i] > maxValue) {`
+
+`maxValue = arr[i];` `// 输入数据的最大值`
+
+`}`
+
+`}`
+
+`// 桶的初始化`
+
+`var` `DEFAULT_BUCKET_SIZE = 5;` `// 设置桶的默认数量为5`
+
+`bucketSize = bucketSize || DEFAULT_BUCKET_SIZE;`
+
+`var` `bucketCount = Math.floor((maxValue - minValue) / bucketSize) + 1;  `
+
+`var` `buckets =` `new` `Array(bucketCount);`
+
+`for` `(i = 0; i < buckets.length; i++) {`
+
+`buckets[i] = [];`
+
+`}`
+
+`// 利用映射函数将数据分配到各个桶中`
+
+`for` `(i = 0; i < arr.length; i++) {`
+
+`buckets[Math.floor((arr[i] - minValue) / bucketSize)].push(arr[i]);`
+
+`}`
+
+`arr.length = 0;`
+
+`for` `(i = 0; i < buckets.length; i++) {`
+
+`insertionSort(buckets[i]);` `// 对每个桶进行排序，这里使用了插入排序`
+
+`for` `(``var` `j = 0; j < buckets[i].length; j++) {`
+
+`arr.push(buckets[i][j]);                     `
+
+`}`
+
+`}`
+
+`return` `arr;`
+
+`}`
+```
+
+#### 9.4 算法分析
+
+桶排序最好情况下使用线性时间O(n)，桶排序的时间复杂度，取决与对各个桶之间数据进行排序的时间复杂度，因为其它部分的时间复杂度都为O(n)。很显然，桶划分的越小，各个桶之间的数据越少，排序所用的时间也会越少。但相应的空间消耗就会增大。 
+
+### 10、基数排序（Radix Sort）
+
+基数排序是按照低位先排序，然后收集；再按照高位排序，然后再收集；依次类推，直到最高位。有时候有些属性是有优先级顺序的，先按低优先级排序，再按高优先级排序。最后的次序就是高优先级高的在前，高优先级相同的低优先级高的在前。
+
+#### 10.1 算法描述
+
+*   取得数组中的最大数，并取得位数；
+*   arr为原始数组，从最低位开始取每个位组成radix数组；
+*   对radix进行计数排序（利用计数排序适用于小范围数的特点）；
+
+#### 10.2 动图演示
+
+![](https://images2017.cnblogs.com/blog/849589/201710/849589-20171015232453668-1397662527.gif) 
+
+#### 10.3 代码实现
+
+ 
+``` java
+
+
+`// LSD Radix Sort`
+
+`var` `counter = [];`
+
+`function radixSort(arr, maxDigit) {`
+
+`var` `mod = 10;`
+
+`var` `dev = 1;`
+
+`for` `(``var` `i = 0; i < maxDigit; i++, dev *= 10, mod *= 10) {`
+
+`for``(``var` `j = 0; j < arr.length; j++) {`
+
+`var` `bucket = parseInt((arr[j] % mod) / dev);`
+
+`if``(counter[bucket]==``null``) {`
+
+`counter[bucket] = [];`
+
+`}`
+
+`counter[bucket].push(arr[j]);`
+
+`}`
+
+`var` `pos = 0;`
+
+`for``(``var` `j = 0; j < counter.length; j++) {`
+
+`var` `value =` `null``;`
+
+`if``(counter[j]!=``null``) {`
+
+`while` `((value = counter[j].shift()) !=` `null``) {`
+
+`arr[pos++] = value;`
+
+`}`
+
+`}`
+
+`}`
+
+`}`
+
+`return` `arr;`
+
+`}`
+
+```
+#### 10.4 算法分析
+
+基数排序基于分别排序，分别收集，所以是稳定的。但基数排序的性能比桶排序要略差，每一次关键字的桶分配都需要O(n)的时间复杂度，而且分配之后得到新的关键字序列又需要O(n)的时间复杂度。假如待排数据可以分为d个关键字，则基数排序的时间复杂度将是O(d*2n) ，当然d要远远小于n，因此基本上还是线性级别的。
+
+基数排序的空间复杂度为O(n+k)，其中k为桶的数量。一般来说n>>k，因此额外空间需要大概n个左右。
